@@ -54,6 +54,62 @@
         </div>
     </div>
 </nav>
+<?php elseif (isLoggedIn() && (int)($_SESSION['role_id'] ?? 0) === 4 && !($isLandingPage ?? false)): ?>
+<nav class="navbar navbar-expand-lg navbar-dark app-navbar" style="background-color: #1e3054 !important; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15) !important;">
+    <div class="container">
+        <a class="navbar-brand fw-semibold" href="<?php echo sanitize(kitchen_url('index.php')); ?>">
+            Kitchen Portal
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="<?php echo sanitize(kitchen_url('index.php')); ?>">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="<?php echo sanitize(kitchen_url('daily_menu.php')); ?>">Daily Menu</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="<?php echo sanitize(kitchen_url('weekly_menu.php')); ?>">Weekly Planner</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="<?php echo sanitize(kitchen_url('dietary.php')); ?>">Dietary Requirements</a>
+                </li>
+                <!-- Phase 2 Links -->
+                <li class="nav-item">
+                    <a class="nav-link" href="<?php echo sanitize(kitchen_url('reports.php')); ?>">Reports</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">More</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="<?php echo sanitize(kitchen_url('preparation.php')); ?>">Preparation</a></li>
+                        <li><a class="dropdown-item" href="<?php echo sanitize(kitchen_url('distribution.php')); ?>">Distribution</a></li>
+                        <li><a class="dropdown-item" href="<?php echo sanitize(kitchen_url('inventory.php')); ?>">Inventory</a></li>
+                        <li><a class="dropdown-item" href="<?php echo sanitize(kitchen_url('wastage.php')); ?>">Wastage</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="<?php echo sanitize(kitchen_url('profile.php')); ?>">My Profile</a></li>
+                    </ul>
+                </li>
+            </ul>
+
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+                <li class="nav-item">
+                    <span class="navbar-text fw-semibold" style="color: #e0e0e0; font-size: 0.9rem;">
+                        Hello, <?php echo sanitize($_SESSION['name'] ?? ''); ?>
+                    </span>
+                </li>
+                <li class="nav-item" style="margin: 0 0.5rem;">
+                    <span class="text-white-50" style="opacity: 0.35;">|</span>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-semibold" href="<?php echo sanitize(public_url('logout.php')); ?>" style="color: #e0e0e0;">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
 <?php else: ?>
 <nav class="site-navbar" role="navigation" aria-label="Main navigation">
     <div class="nav-container">

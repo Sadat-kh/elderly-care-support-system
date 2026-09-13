@@ -17,9 +17,21 @@ function isLoggedIn() {
 
 // redirect to login if user doesn't have the right role
 function checkRole($role_id) {
-    if (!isLoggedIn() || (int)$_SESSION['role_id'] !== $role_id) {
+    if (!isLoggedIn()) {
         header('Location: ' . public_url('login.php'));
         exit;
+    }
+    $user_role = (int)$_SESSION['role_id'];
+    if (is_array($role_id)) {
+        if (!in_array($user_role, $role_id, true)) {
+            header('Location: ' . public_url('login.php'));
+            exit;
+        }
+    } else {
+        if ($user_role !== (int)$role_id) {
+            header('Location: ' . public_url('login.php'));
+            exit;
+        }
     }
 }
 
@@ -63,7 +75,7 @@ function app_base_url() {
 
     foreach ($roleFolders as $folder) {
         $pos = strrpos($dir, $folder);
-        if ($pos !== false) {
+        if ($pos !== false && $pos === strlen($dir) - strlen($folder)) {
             return rtrim(substr($dir, 0, $pos), '/');
         }
     }
@@ -77,6 +89,10 @@ function public_url($page) {
 
 function elderly_url($page) {
     return app_base_url() . '/elderly/' . ltrim($page, '/');
+}
+
+function kitchen_url($page) {
+    return app_base_url() . '/kitchen/' . ltrim($page, '/');
 }
 
 function getElderlyProfileId($pdo, $user_id) {
