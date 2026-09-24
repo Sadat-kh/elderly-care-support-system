@@ -95,10 +95,14 @@ require_once '../includes/header.php';
                                         <?php echo sanitize($meal['description']) ?: 'No description provided.'; ?>
                                     </p>
                                     <?php if (!empty($meal['dietary_tags'])): ?>
-                                        <div class="mt-auto">
-                                            <span class="badge bg-info text-dark">
-                                                <i class="fas fa-tag"></i> <?php echo sanitize($meal['dietary_tags']); ?>
-                                            </span>
+                                        <div class="mt-auto meal-tags">
+                                            <?php foreach (array_map('trim', explode(',', $meal['dietary_tags'])) as $tag): ?>
+                                                <?php if ($tag !== ''): ?>
+                                                    <span class="badge bg-info text-dark meal-tag">
+                                                        <?php echo sanitize($tag); ?>
+                                                    </span>
+                                                <?php endif; ?>
+                                            <?php endforeach; ?>
                                         </div>
                                     <?php endif; ?>
                                 </div>

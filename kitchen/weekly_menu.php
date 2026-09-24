@@ -189,9 +189,15 @@ require_once '../includes/header.php';
                                                 <?php echo sanitize($meal['title']); ?>
                                             </div>
                                             <?php if (!empty($meal['dietary_tags'])): ?>
-                                                <span class="badge bg-info text-dark w-100 text-start text-truncate mb-2" title="<?php echo sanitize($meal['dietary_tags']); ?>">
-                                                    <?php echo sanitize($meal['dietary_tags']); ?>
-                                                </span>
+                                                <div class="meal-tags mb-2">
+                                                    <?php foreach (array_map('trim', explode(',', $meal['dietary_tags'])) as $tag): ?>
+                                                        <?php if ($tag !== ''): ?>
+                                                            <span class="badge bg-info text-dark meal-tag" title="<?php echo sanitize($tag); ?>">
+                                                                <?php echo sanitize($tag); ?>
+                                                            </span>
+                                                        <?php endif; ?>
+                                                    <?php endforeach; ?>
+                                                </div>
                                             <?php endif; ?>
                                             <div class="mt-auto d-flex justify-content-between">
                                                 <span class="text-muted" style="font-size: 0.75rem;"><?php echo date('g:i A', strtotime($meal['serving_time'])); ?></span>
