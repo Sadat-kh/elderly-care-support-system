@@ -67,6 +67,14 @@
     box-shadow: 0 4px 16px rgba(47, 93, 80, 0.09);
     padding: 1.25rem 1.5rem;
     border-left: 4px solid var(--brand-green);
+    overflow: hidden;          /* belt-and-suspenders: no child bleeds past the border */
+    box-sizing: border-box;
+}
+
+/* Ensure Bootstrap's card-body respects the card's padding box */
+.dashboard-card .card-body {
+    box-sizing: border-box;
+    min-width: 0;              /* allow flex children to shrink below their natural size */
 }
 
 .dashboard-card--muted {
@@ -280,6 +288,28 @@
 .meal-lunch { background: #dfe6e9; color: #2d3436; }
 .meal-dinner { background: #fab1a0; color: #6b3a2e; }
 .meal-snack { background: #a29bfe; color: #fff; }
+
+/* --- Dietary tag pills inside meal cards ---
+   Each tag is its own badge so they wrap naturally.
+   The container is a flex row that wraps to the next
+   line instead of overflowing the card edge. */
+.meal-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    width: 100%;          /* never wider than the card-body */
+    box-sizing: border-box;
+}
+
+.meal-tag {
+    /* Override Bootstrap badge's white-space: nowrap so each
+       individual pill can still break at a space if needed */
+    white-space: normal;
+    word-break: break-word;
+    line-height: 1.3;
+    font-size: 0.75rem;
+    padding: 0.25em 0.55em;
+}
 
 /* empty state — visual container instead of bare floating text */
 .elderly-empty {
