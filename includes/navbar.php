@@ -40,9 +40,9 @@
 
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
                 <li class="nav-item">
-                    <span class="navbar-text fw-semibold" style="color: #e0e0e0; font-size: 0.9rem;">
+                    <a href="<?php echo sanitize(elderly_url('profile.php')); ?>" class="nav-link fw-semibold" style="color: #e0e0e0; font-size: 0.9rem;">
                         Hello, <?php echo sanitize($_SESSION['name'] ?? ''); ?>
-                    </span>
+                    </a>
                 </li>
                 <li class="nav-item" style="margin: 0 0.5rem;">
                     <span class="text-white-50" style="opacity: 0.35;">|</span>
@@ -96,9 +96,9 @@
 
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
                 <li class="nav-item">
-                    <span class="navbar-text fw-semibold" style="color: #e0e0e0; font-size: 0.9rem;">
+                    <a href="<?php echo sanitize(kitchen_url('profile.php')); ?>" class="nav-link fw-semibold" style="color: #e0e0e0; font-size: 0.9rem;">
                         Hello, <?php echo sanitize($_SESSION['name'] ?? ''); ?>
-                    </span>
+                    </a>
                 </li>
                 <li class="nav-item" style="margin: 0 0.5rem;">
                     <span class="text-white-50" style="opacity: 0.35;">|</span>
@@ -168,9 +168,58 @@
             </ul>
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
                 <li class="nav-item">
-                    <span class="navbar-text fw-semibold" style="color: #e0e0e0; font-size: 0.9rem;">
+                    <a href="<?php echo sanitize(manager_url('profile.php')); ?>" class="nav-link fw-semibold" style="color: #e0e0e0; font-size: 0.9rem;">
                         Hello, <?php echo sanitize($_SESSION['name'] ?? ''); ?>
-                    </span>
+                    </a>
+                </li>
+                <li class="nav-item" style="margin: 0 0.5rem;">
+                    <span class="text-white-50" style="opacity: 0.35;">|</span>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-semibold" href="<?php echo sanitize(public_url('logout.php')); ?>" style="color: #e0e0e0;">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<?php elseif (isLoggedIn() && (int)($_SESSION['role_id'] ?? 0) === 7 && !($isLandingPage ?? false)): ?>
+<nav class="navbar navbar-expand-lg navbar-dark app-navbar" style="background-color: #1e3054 !important; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15) !important;">
+    <div class="container">
+        <a class="navbar-brand fw-semibold" href="<?php echo sanitize(donor_url('index.php')); ?>">
+            ❤️ Donor Portal
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="<?php echo sanitize(donor_url('index.php')); ?>">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="<?php echo sanitize(donor_url('campaigns.php')); ?>">Campaigns</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="<?php echo sanitize(donor_url('donate.php')); ?>">Donate</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="<?php echo sanitize(donor_url('history.php')); ?>">Donation History</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="<?php echo sanitize(donor_url('impact.php')); ?>">Impact</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">More</a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="<?php echo sanitize(donor_url('profile.php')); ?>">My Profile</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+                <li class="nav-item">
+                    <a href="<?php echo sanitize(donor_url('profile.php')); ?>" class="nav-link fw-semibold" style="color: #e0e0e0; font-size: 0.9rem;">
+                        Hello, <?php echo sanitize($_SESSION['name'] ?? ''); ?>
+                    </a>
                 </li>
                 <li class="nav-item" style="margin: 0 0.5rem;">
                     <span class="text-white-50" style="opacity: 0.35;">|</span>

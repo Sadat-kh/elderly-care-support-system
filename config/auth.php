@@ -99,6 +99,10 @@ function manager_url($page) {
     return app_base_url() . '/manager/' . ltrim($page, '/');
 }
 
+function donor_url($page) {
+    return app_base_url() . '/donor/' . ltrim($page, '/');
+}
+
 function getElderlyProfileId($pdo, $user_id) {
     $stmt = $pdo->prepare("SELECT id FROM elderly_profiles WHERE user_id = ? LIMIT 1");
     $stmt->execute([$user_id]);
