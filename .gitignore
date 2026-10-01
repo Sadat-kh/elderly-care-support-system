@@ -8,3 +8,8 @@ composer.lock
 .idea/
 .vscode/
 *.tmp
+
+# Ignore uploaded photos but keep directory
+public/uploads/photos/*
+!public/uploads/photos/.gitkeep
+!public/uploads/photos/.htaccess

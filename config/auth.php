@@ -107,6 +107,10 @@ function volunteer_url($page) {
     return app_base_url() . '/volunteer/' . ltrim($page, '/');
 }
 
+function family_url($page) {
+    return app_base_url() . '/family/' . ltrim($page, '/');
+}
+
 function getElderlyProfileId($pdo, $user_id) {
     $stmt = $pdo->prepare("SELECT id FROM elderly_profiles WHERE user_id = ? LIMIT 1");
     $stmt->execute([$user_id]);

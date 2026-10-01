@@ -149,11 +149,13 @@ $rooms_by_status = [
 // ── Fetch room-change requests (all, ordered pending first) ───────────────────
 $all_requests = $pdo->query("
     SELECT
-        rcr.id, rcr.reason, rcr.status, rcr.created_at, rcr.reviewed_at,
+        rcr.id, rcr.reason, rcr.status, rcr.created_at, rcr.reviewed_at, rcr.requested_by_family_id,
         -- Resident
         ep.id        AS profile_id,
         u_res.name   AS resident_name,
         u_res.email  AS resident_email,
+        -- Family
+        u_fam.name   AS family_name,
         -- Current room
         cr.room_number AS current_room, cr.floor AS current_floor, cr.room_type AS current_type,
         -- Preferred room
@@ -167,6 +169,7 @@ $all_requests = $pdo->query("
     FROM room_change_requests rcr
     JOIN elderly_profiles ep ON ep.id = rcr.elderly_profile_id
     JOIN users u_res         ON u_res.id = ep.user_id
+    LEFT JOIN users u_fam    ON u_fam.id = rcr.requested_by_family_id
     LEFT JOIN rooms cr       ON cr.id = rcr.current_room_id
     LEFT JOIN rooms pr       ON pr.id = rcr.preferred_room_id
     LEFT JOIN users u_rev    ON u_rev.id = rcr.reviewed_by
@@ -280,7 +283,14 @@ require_once '../includes/header.php';
                     <tr>
                         <td>
                             <strong><?php echo sanitize($req['resident_name']); ?></strong><br>
-                            <small class="text-muted"><?php echo sanitize($req['resident_email']); ?></small>
+                            <small class="text-muted"><?php echo sanitize($req['resident_email']); ?></small><br>
+                            <small class="text-primary mt-1 d-inline-block">
+                                <?php if ($req['requested_by_family_id']): ?>
+                                    <i class="bi bi-people"></i> Requested by: <?php echo sanitize($req['family_name']); ?> (Family)
+                                <?php else: ?>
+                                    <i class="bi bi-person"></i> Requested by: Resident
+                                <?php endif; ?>
+                            </small>
                         </td>
                         <td>
                             <?php if ($req['current_room']): ?>
@@ -367,7 +377,16 @@ require_once '../includes/header.php';
             <tbody>
                 <?php foreach ($resolved_requests as $req): ?>
                 <tr>
-                    <td><?php echo sanitize($req['resident_name']); ?></td>
+                    <td>
+                        <?php echo sanitize($req['resident_name']); ?><br>
+                        <small class="text-muted">
+                            <?php if ($req['requested_by_family_id']): ?>
+                                Requested by: <?php echo sanitize($req['family_name']); ?> (Family)
+                            <?php else: ?>
+                                Requested by: Resident
+                            <?php endif; ?>
+                        </small>
+                    </td>
                     <td>
                         <?php echo $req['current_room']   ? 'Room ' . sanitize($req['current_room'])   : 'None'; ?>
                         →
