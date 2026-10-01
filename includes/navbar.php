@@ -231,6 +231,70 @@
         </div>
     </div>
 </nav>
+<?php elseif (isLoggedIn() && (int)($_SESSION['role_id'] ?? 0) === 8 && !($isLandingPage ?? false)): ?>
+<nav class="navbar navbar-expand-lg navbar-dark app-navbar" style="background-color: #1e3054 !important; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15) !important;">
+    <div class="container">
+        <a class="navbar-brand fw-semibold" href="<?php echo sanitize(volunteer_url('index.php')); ?>">
+            🤝 Volunteer Portal
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" href="<?php echo sanitize(volunteer_url('index.php')); ?>">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="<?php echo sanitize(volunteer_url('opportunities.php')); ?>">Opportunities</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="<?php echo sanitize(volunteer_url('apply.php')); ?>">Apply</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="<?php echo sanitize(volunteer_url('schedule.php')); ?>">My Schedule</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="<?php echo sanitize(volunteer_url('history.php')); ?>">History</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">More</a>
+                    <ul class="dropdown-menu">
+                        <?php 
+                        $unread_count = 0;
+                        if (isset($pdo) && isset($_SESSION['user_id'])) {
+                            $n_stmt = $pdo->prepare("SELECT COUNT(*) FROM notifications WHERE user_id = ? AND is_read = 0");
+                            $n_stmt->execute([$_SESSION['user_id']]);
+                            $unread_count = (int)$n_stmt->fetchColumn();
+                        }
+                        ?>
+                        <li><a class="dropdown-item d-flex justify-content-between align-items-center" href="<?php echo sanitize(volunteer_url('notifications.php')); ?>">
+                            Notifications
+                            <?php if ($unread_count > 0): ?>
+                                <span class="badge bg-danger rounded-pill"><?php echo $unread_count; ?></span>
+                            <?php endif; ?>
+                        </a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="<?php echo sanitize(volunteer_url('profile.php')); ?>">My Profile</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0 align-items-center">
+                <li class="nav-item">
+                    <a href="<?php echo sanitize(volunteer_url('profile.php')); ?>" class="nav-link fw-semibold" style="color: #e0e0e0; font-size: 0.9rem;">
+                        Hello, <?php echo sanitize($_SESSION['name'] ?? ''); ?>
+                    </a>
+                </li>
+                <li class="nav-item" style="margin: 0 0.5rem;">
+                    <span class="text-white-50" style="opacity: 0.35;">|</span>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link fw-semibold" href="<?php echo sanitize(public_url('logout.php')); ?>" style="color: #e0e0e0;">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
 <?php else: ?>
 <nav class="site-navbar" role="navigation" aria-label="Main navigation">
     <div class="nav-container">

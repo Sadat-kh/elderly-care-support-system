@@ -53,6 +53,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $success = "Assignment status updated.";
         }
     }
+    // 4. Create New Assignment
+    if (isset($_POST['create_assignment'])) {
+        $volunteer_id = (int)$_POST['volunteer_id'];
+        $task_title = trim($_POST['task_title']);
+        $task_description = trim($_POST['task_description']);
+        $assigned_date = $_POST['assigned_date'];
+
+        if ($volunteer_id > 0 && !empty($task_title) && !empty($assigned_date)) {
+            $pdo->prepare("INSERT INTO volunteer_assignments (volunteer_id, task_title, task_description, assigned_date, assigned_by) VALUES (?, ?, ?, ?, ?)")
+                ->execute([$volunteer_id, $task_title, $task_description, $assigned_date, $user_id]);
+            
+            $assignment_id = $pdo->lastInsertId();
+            audit_log($pdo, $user_id, 'create_assignment', 'volunteer_assignments', $assignment_id, "Created assignment: {$task_title}");
+            
+            // Notify the volunteer
+            $v_stmt = $pdo->prepare("SELECT user_id FROM volunteers WHERE id = ?");
+            $v_stmt->execute([$volunteer_id]);
+            $target_user = $v_stmt->fetchColumn();
+            if ($target_user) {
+                notify_user($pdo, $target_user, "New Volunteer Task", "You have been assigned: {$task_title} on " . date('M j, Y', strtotime($assigned_date)), 'info', volunteer_url('schedule.php'));
+            }
+            
+            $success = "New assignment created and volunteer notified.";
+        } else {
+            $error = "Please fill in all required fields.";
+        }
+    }
 }
 
 // ── Data Fetching ────────────────────────────────────────────────────────────
@@ -98,6 +125,11 @@ require_once '../includes/header.php';
     <?php if ($success): ?>
         <div class="alert alert-success alert-dismissible fade show">
             <?php echo sanitize($success); ?><button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <?php endif; ?>
+    <?php if ($error): ?>
+        <div class="alert alert-danger alert-dismissible fade show">
+            <?php echo sanitize($error); ?><button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     <?php endif; ?>
 
@@ -159,7 +191,12 @@ require_once '../includes/header.php';
 
         <!-- Active Assignments -->
         <div class="col-lg-6">
-            <h2 class="elderly-section-title">Active Assignments</h2>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h2 class="elderly-section-title mb-0">Active Assignments</h2>
+                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#assignTaskModal">
+                    + Assign Task
+                </button>
+            </div>
             <?php if (empty($active_assignments)): ?>
                 <div class="card border-0 shadow-sm"><div class="card-body text-muted text-center py-4">No active assignments.</div></div>
             <?php else: ?>
@@ -230,6 +267,49 @@ require_once '../includes/header.php';
                     <?php endforeach; ?>
                 </div>
             <?php endif; ?>
+        </div>
+    </div>
+</div>
+
+<!-- Assign Task Modal -->
+<div class="modal fade" id="assignTaskModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST">
+                <div class="modal-header">
+                    <h5 class="modal-title">Assign New Task</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Select Volunteer <span class="text-danger">*</span></label>
+                        <select name="volunteer_id" class="form-select" required>
+                            <option value="">-- Choose an active volunteer --</option>
+                            <?php foreach ($volunteers as $vol): ?>
+                                <?php if ($vol['status'] === 'active'): ?>
+                                    <option value="<?php echo $vol['id']; ?>"><?php echo sanitize($vol['name']); ?> (<?php echo sanitize($vol['email']); ?>)</option>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Task Title <span class="text-danger">*</span></label>
+                        <input type="text" name="task_title" class="form-control" required placeholder="e.g. Morning Walk Companion">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Task Description</label>
+                        <textarea name="task_description" class="form-control" rows="3" placeholder="Provide details..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Date <span class="text-danger">*</span></label>
+                        <input type="date" name="assigned_date" class="form-control" required min="<?php echo date('Y-m-d'); ?>">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" name="create_assignment" value="1" class="btn btn-primary">Assign Task</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
