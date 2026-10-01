@@ -13,3 +13,4 @@ composer.lock
 public/uploads/photos/*
 !public/uploads/photos/.gitkeep
 !public/uploads/photos/.htaccess
+docs/leftover_reference/

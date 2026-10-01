@@ -2,8 +2,35 @@
 require_once '../config/database.php';
 require_once '../config/auth.php';
 
+
+$role_folders = [
+    1 => 'elderly',
+    2 => 'family',
+    3 => 'caregiver',
+    4 => 'kitchen',
+    5 => 'manager',
+    6 => 'admin',
+    7 => 'donor',
+    8 => 'volunteer',
+];
+
+
+function get_redirect_url($role_id, $role_folders) {
+    $redirect = "index.php"; // safe fallback
+    if (array_key_exists($role_id, $role_folders)) {
+        $folder = $role_folders[$role_id];
+        $path   = __DIR__ . "/../{$folder}/index.php";
+        if (file_exists($path)) {
+            $redirect = "../{$folder}/index.php";
+        }
+    }
+    return $redirect;
+}
+
+
 if (isLoggedIn()) {
-    header("Location: index.php");
+    $role_id = isset($_SESSION['role_id']) ? (int)$_SESSION['role_id'] : 0;
+    header("Location: " . get_redirect_url($role_id, $role_folders));
     exit();
 }
 
@@ -13,7 +40,7 @@ $formEmail = '';
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (isset($_POST['email']) && isset($_POST['password'])) {
         $formEmail = trim($_POST['email']);
-        $password = $_POST['password'];
+        $password  = $_POST['password'];
 
         if (empty($formEmail) || empty($password)) {
             $error = "Please fill in both fields.";
@@ -29,7 +56,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                         $_SESSION['name']    = $user['name'];
                         $_SESSION['role_id'] = $user['role_id'];
 
-                        header("Location: index.php");
+                        $role_id = (int)$user['role_id'];
+                        header("Location: " . get_redirect_url($role_id, $role_folders));
                         exit();
                     } else {
                         $error = "Wrong email or password.";
