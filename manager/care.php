@@ -63,6 +63,19 @@ $active_count = (int)$stmt->fetchColumn();
 $stmt = $pdo->query("SELECT COUNT(*) FROM care_plans WHERE active=0");
 $inactive_count = (int)$stmt->fetchColumn();
 
+// Fetch recent observations
+$obs_stmt = $pdo->prepare("
+    SELECT o.*, u.name as resident_name, c.name as caregiver_name
+    FROM observations o
+    JOIN elderly_profiles ep ON o.elderly_profile_id = ep.id
+    JOIN users u ON ep.user_id = u.id
+    JOIN users c ON o.caregiver_user_id = c.id
+    ORDER BY o.created_at DESC
+    LIMIT 50
+");
+$obs_stmt->execute();
+$observations = $obs_stmt->fetchAll();
+
 $pageTitle = 'Care Plans';
 require_once '../includes/header.php';
 ?>
@@ -139,6 +152,56 @@ require_once '../includes/header.php';
         </div>
     </div>
 
+    <!-- Observations -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-white py-3">
+            <h5 class="mb-0"><i class="bi bi-eye text-primary"></i> Recent Caregiver Observations</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Date</th>
+                            <th>Resident</th>
+                            <th>Caregiver</th>
+                            <th>Severity</th>
+                            <th>Note</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (empty($observations)): ?>
+                            <tr><td colspan="5" class="text-center py-4">No observations logged yet.</td></tr>
+                        <?php else: ?>
+                            <?php foreach ($observations as $obs): ?>
+                                <tr>
+                                    <td><small class="text-muted"><?php echo date('M j, Y h:i A', strtotime($obs['created_at'])); ?></small></td>
+                                    <td><strong><?php echo sanitize($obs['resident_name']); ?></strong></td>
+                                    <td><small><?php echo sanitize($obs['caregiver_name']); ?></small></td>
+                                    <td>
+                                        <?php 
+                                        $badge = match($obs['severity']) {
+                                            'routine' => 'bg-info text-dark',
+                                            'concern' => 'bg-warning text-dark',
+                                            'incident' => 'bg-danger',
+                                            default => 'bg-secondary'
+                                        };
+                                        ?>
+                                        <span class="badge <?php echo $badge; ?>"><?php echo ucfirst($obs['severity']); ?></span>
+                                    </td>
+                                    <td>
+                                        <div style="max-width: 300px; white-space: pre-wrap; font-size: 0.9rem;"><?php echo sanitize($obs['note']); ?></div>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <h4 class="mb-3">Care Plans List</h4>
     <p class="text-muted mb-3">Showing <strong><?php echo count($plans); ?></strong> plan(s)</p>
 
     <?php if (empty($plans)): ?>
